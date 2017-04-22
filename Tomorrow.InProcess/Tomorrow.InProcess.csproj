@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netstandard1.0</TargetFramework>
+    <Version>0.1.0</Version>
+    <Authors>Liam Dawson</Authors>
+    <Company>Liam Dawson</Company>
+    <Description>In-process implementation for the Tomorrow task handling system</Description>
+    <Copyright>Copyright 2017 Liam Dawson</Copyright>
+    <PackageLicenseUrl>https://github.com/liamdawson/tomorrow/blob/master/Tomorrow.InProcess/LICENSE.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/liamdawson/tomorrow</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/liamdawson/tomorrow.git</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tomorrow.Abstractions\Tomorrow.Abstractions.csproj" />
+  </ItemGroup>
+
+</Project>
