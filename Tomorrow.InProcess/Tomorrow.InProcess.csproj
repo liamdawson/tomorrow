@@ -7,13 +7,14 @@
     <Company>Liam Dawson</Company>
     <Description>In-process implementation for the Tomorrow task handling system</Description>
     <Copyright>Copyright 2017 Liam Dawson</Copyright>
-    <PackageLicenseUrl>https://github.com/liamdawson/tomorrow/blob/master/Tomorrow.InProcess/LICENSE.txt</PackageLicenseUrl>
-    <PackageProjectUrl>https://github.com/liamdawson/tomorrow</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/liamdawson/tomorrow.git</RepositoryUrl>
+    <PackageLicenseUrl>https://github.com/tomorrow-lib/tomorrow/blob/master/Tomorrow.InProcess/LICENSE.txt</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/tomorrow-lib/tomorrow</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/tomorrow-lib/tomorrow.git</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
     <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
     <AssemblyVersion>0.2.0.0</AssemblyVersion>
     <FileVersion>0.2.0.0</FileVersion>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
   <ItemGroup>
