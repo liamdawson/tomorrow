@@ -1,4 +1,5 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,21 +13,16 @@ namespace Tomorrow.InProcess.UnitTest
         [TestMethod]
         public async Task PointFiveSecondDelay()
         {
-            int flag = 0;
-            var scheduler = TestHelper.MakeInstance();
+            var (scheduler, flagger) = TestHelper.MakeInstance();
 
-            await scheduler.Schedule(() => flag++, TimeSpan.FromSeconds(0.2));
-            await scheduler.Schedule((sp) => flag++, TimeSpan.FromSeconds(0.2));
-#pragma warning disable CS1998 // Async method lacks 'await' operators and will run synchronously
-            await scheduler.Schedule(async () => flag++, TimeSpan.FromSeconds(0.2));
-            await scheduler.Schedule(async () => flag++, TimeSpan.FromSeconds(0.2));
-#pragma warning restore CS1998
+            await scheduler.Schedule((sp) => sp.GetRequiredService<FlagService>().Call(), TimeSpan.FromSeconds(0.2));
+            await scheduler.Schedule((sp) => Task.Run(() => sp.GetRequiredService<FlagService>().Call()), TimeSpan.FromSeconds(0.2));
 
-            Assert.AreEqual(0, flag, "Scheduler fired tasks before the delay finished.");
+            Assert.AreEqual(0, flagger.Calls, "Scheduler fired tasks before the delay finished.");
 
             await Task.Delay(TimeSpan.FromSeconds(0.5));
 
-            Assert.AreEqual(4, flag, "Scheduler did not fire all tasks in time.");
+            Assert.AreEqual(2, flagger.Calls, "Scheduler did not fire all tasks in time.");
         }
     }
 }

@@ -2,6 +2,7 @@
 using System;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq.Expressions;
 
 namespace Tomorrow.InProcess
 {
@@ -18,7 +19,7 @@ namespace Tomorrow.InProcess
             _semaphore = new SemaphoreSlim(config.MaximumConcurrentJobs, config.MaximumConcurrentJobs);
         }
 
-        public override Task Schedule(Func<IServiceProvider, Task> action, TimeSpan fromNow = default(TimeSpan))
+        public override Task Schedule(Expression<Func<IServiceProvider, Task>> action, TimeSpan fromNow = default(TimeSpan))
         {
             Task.Delay(fromNow)
                 .ContinueWith(async _ =>
@@ -29,7 +30,7 @@ namespace Tomorrow.InProcess
 
                         using (var scope = _scopeFactory.CreateScope())
                         {
-                            await action(scope.ServiceProvider);
+                            await action.Compile().Invoke(scope.ServiceProvider);
                         }
                     }
                     finally

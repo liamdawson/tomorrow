@@ -5,13 +5,19 @@ namespace Tomorrow.InProcess.UnitTest
 {
     internal class TestHelper
     {
-        internal static IJobScheduler MakeInstance()
+        internal static (IJobScheduler JobScheduler, FlagService FlagService) MakeInstance()
         {
             var services = new ServiceCollection();
 
-            services.AddTomorrowInProcess(1);
+            services
+                .AddSingleton<FlagService>()
+                .AddTomorrowInProcess(1);
 
-            return services.BuildServiceProvider().GetRequiredService<IJobScheduler>();
+            var sp = services.BuildServiceProvider();
+
+            return (
+                JobScheduler: sp.GetRequiredService<IJobScheduler>(),
+                FlagService: sp.GetRequiredService<FlagService>());
         }
     }
 }
