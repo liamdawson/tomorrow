@@ -5,9 +5,9 @@
     <Version>0.3.0</Version>
     <Authors>Liam Dawson</Authors>
     <Company>Liam Dawson</Company>
-    <Description>In-process queue handling implementation for the Tomorrow task handling system</Description>
+    <Description>JSON-based job serialization helpers for the Tomorrow task handling system</Description>
     <Copyright>Copyright 2017 Liam Dawson</Copyright>
-    <PackageLicenseUrl>https://github.com/tomorrow-lib/tomorrow/blob/master/Tomorrow.InProcess/LICENSE.txt</PackageLicenseUrl>
+    <PackageLicenseUrl>https://github.com/tomorrow-lib/tomorrow/blob/master/Tomorrow.Core.Json/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/tomorrow-lib/tomorrow</PackageProjectUrl>
     <RepositoryUrl>https://github.com/tomorrow-lib/tomorrow.git</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
@@ -18,7 +18,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Tomorrow.Core.Json\Tomorrow.Core.Json.csproj" />
+    <PackageReference Include="Newtonsoft.Json" Version="10.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Tomorrow.Core\Tomorrow.Core.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,21 +1,15 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using Tomorrow.Abstractions;
+using Tomorrow.Core;
 
 namespace Tomorrow.InProcess
 {
     public static class DependencyInjectionExtensions
     {
-        public static IServiceCollection AddTomorrowInProcess(this IServiceCollection services, int maximumConcurrentJobs = 5)
+        public static IServiceCollection AddTomorrowInProcess(this IServiceCollection services)
         {
             return services
-                .AddSingleton(new InProcessJobSchedulerConfig
-                {
-                    MaximumConcurrentJobs = maximumConcurrentJobs
-                })
-                .AddSingleton<IJobScheduler, InProcessJobScheduler>();
+                .AddOptions()
+                .AddSingleton<InProcessQueueRegistrar>();
         }
     }
 }
