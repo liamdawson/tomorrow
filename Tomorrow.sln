@@ -14,6 +14,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomorrow.Core.Json", "Tomor
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomorrow.Core.Abstractions", "Tomorrow.Core.Abstractions\Tomorrow.Core.Abstractions.csproj", "{F118B7CF-21F4-41DA-8300-B33C00BB2F1D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomorrow.Core.Abstractions.UnitTests", "Tomorrow.Core.Abstractions.UnitTests\Tomorrow.Core.Abstractions.UnitTests.csproj", "{41C7019F-1996-41B5-B0FB-EB41B401C169}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,6 +38,10 @@ Global
 		{F118B7CF-21F4-41DA-8300-B33C00BB2F1D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F118B7CF-21F4-41DA-8300-B33C00BB2F1D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F118B7CF-21F4-41DA-8300-B33C00BB2F1D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{41C7019F-1996-41B5-B0FB-EB41B401C169}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{41C7019F-1996-41B5-B0FB-EB41B401C169}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{41C7019F-1996-41B5-B0FB-EB41B401C169}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{41C7019F-1996-41B5-B0FB-EB41B401C169}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

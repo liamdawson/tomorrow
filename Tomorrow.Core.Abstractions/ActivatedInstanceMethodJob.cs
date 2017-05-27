@@ -31,6 +31,11 @@ namespace Tomorrow.Core.Abstractions
 
                     Method.Invoke(instance, Parameters);
                 }
+                // when invoked method threw an exception, return _that_ exception
+                catch (TargetInvocationException ex) when (ex.HResult == -2146232828)
+                {
+                    return new QueuedJobResult(ex.InnerException);
+                }
                 catch (Exception ex)
                 {
                     return new QueuedJobResult(ex);
