@@ -54,18 +54,12 @@ namespace Tomorrow.Core.Abstractions.UnitTests
         }
 
         [TestMethod]
-        public async Task ReturnsStaticErrorResult()
+        [ExpectedException(typeof(ArgumentException))]
+        public void StaticMethodTargetThrowsException()
         {
-
-            var pipeline = new ServiceCollection().BuildServiceProvider();
             Action del = TestService.ThrowStaticException;
 
             var testee = new ActivatedInstanceMethodJob(del.GetMethodInfo());
-
-            var result = await testee.Perform(pipeline);
-
-            Assert.AreEqual(QueuedJobResult.JobResult.Errored, result.Result);
-            Assert.IsInstanceOfType(result.Exception, typeof(TestException));
         }
     }
 }

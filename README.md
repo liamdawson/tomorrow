@@ -26,12 +26,17 @@ The following queue handlers are available:
 * `Tomorrow.InProcess` - a basic in-process queue handler, which does not
   persist or distribute jobs.
 
-Limitations
------------
+Security Decisions
+------------------
 
-* The expression-based scheduling interface only supports invocations of
-  instance methods on object instances retrieved from the DI pipeline. (This is
-  by design until further security considerations are addressed)
+* Static method invocations via `ActivatedInstanceMethodJob` (and by extension,
+  `Schedule(<expression>)`) are *completely banned*. This disallows the usage
+  of methods such as `System.IO.File.Delete`, which could be queued via access
+  to the queue's backend.
+* No plans for more expressive `Schedule(<expression>)` support - only support
+  for `ActivatedInstanceMethodJob` compatible jobs. This is to avoid the
+  possibility of an attacker adding malicious C# code into a queue's backend,
+  and having it evaluated on a queue runner.
 
 Roadmap
 -------
@@ -41,6 +46,5 @@ Roadmap
 * [ ] Support a persistent queue handler (Redis-based)
 * [x] Support class-based jobs
 * [ ] Support a reporting pipeline for jobs
-* [ ] Consider supporting a richer set of queued expressions, balanced against security concerns
 * [ ] Build documentation for consumers and implementors
 * [ ] Provide some usage scenarios

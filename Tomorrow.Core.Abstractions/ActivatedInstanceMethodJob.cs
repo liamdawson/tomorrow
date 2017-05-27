@@ -8,7 +8,23 @@ namespace Tomorrow.Core.Abstractions
 {
     public class ActivatedInstanceMethodJob : IQueuedJob
     {
-        public MethodInfo Method { get; set; }
+        private MethodInfo _method;
+
+        public MethodInfo Method
+        {
+            get => _method;
+            set
+            {
+                if (value.IsStatic)
+                {
+                    throw new ArgumentException(
+                        $"Static methods cannot be targets of an {nameof(ActivatedInstanceMethodJob)}.", nameof(value));
+                }
+
+                _method = value;
+            }
+        }
+
         public object[] Parameters { get; set; }
 
         public ActivatedInstanceMethodJob()
@@ -27,8 +43,9 @@ namespace Tomorrow.Core.Abstractions
             {
                 try
                 {
+                    // support static methods if the security restriction is
+                    // ever lifted
                     var instance = Method.IsStatic ? null : serviceProvider.GetRequiredService(Method.DeclaringType);
-
                     Method.Invoke(instance, Parameters);
                 }
                 // when invoked method threw an exception, return _that_ exception
@@ -37,10 +54,10 @@ namespace Tomorrow.Core.Abstractions
                     return new QueuedJobResult(ex.InnerException);
                 }
                 catch (Exception ex)
+
                 {
                     return new QueuedJobResult(ex);
                 }
-
                 return new QueuedJobResult();
             });
         }
