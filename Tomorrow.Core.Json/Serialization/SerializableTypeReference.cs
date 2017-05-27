@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
 namespace Tomorrow.Core.Json.Serialization
 {
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     [SuppressMessage("ReSharper", "UnusedMember.Global")]
-    public class SimpleTypePointer
+    public class SerializableTypeReference
     {
         private Type _type;
         [JsonIgnore]
@@ -15,19 +14,19 @@ namespace Tomorrow.Core.Json.Serialization
 
         public string QualifiedName { get; set; }
 
-        public SimpleTypePointer(Type type)
+        public SerializableTypeReference(Type type)
         {
             QualifiedName = type.AssemblyQualifiedName;
         }
 
-        public SimpleTypePointer() { }
+        public SerializableTypeReference() { }
 
-        public static implicit operator SimpleTypePointer(Type type)
+        public static implicit operator SerializableTypeReference(Type type)
         {
-            return new SimpleTypePointer(type);
+            return new SerializableTypeReference(type);
         }
 
-        public static implicit operator Type(SimpleTypePointer typeReference)
+        public static implicit operator Type(SerializableTypeReference typeReference)
         {
             return typeReference.Type;
         }

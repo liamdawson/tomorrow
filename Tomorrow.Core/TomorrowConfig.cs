@@ -1,11 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace Tomorrow.Core
 {
     public class TomorrowConfig
     {
-        public Dictionary<string, TomorrowQueueRegistrarMapping> Queues { get; set; } = new Dictionary<string, TomorrowQueueRegistrarMapping>();
+        public Dictionary<string, QueueRegistrarMapping> Queues { get; set; } = new Dictionary<string, QueueRegistrarMapping>();
     }
 }

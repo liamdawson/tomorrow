@@ -2,6 +2,7 @@
 using System.Diagnostics.CodeAnalysis;
 using Microsoft.Extensions.Configuration;
 using Tomorrow.Core;
+using Tomorrow.Core.Abstractions;
 
 // ReSharper disable once CheckNamespace
 namespace Microsoft.Extensions.DependencyInjection
@@ -14,7 +15,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return services
                 .AddOptions()
                 .Configure<TomorrowConfig>(configuration)
-                .AddScoped<ITomorrowScheduler, TomorrowScheduler>();
+                .AddScoped<IScheduler, Scheduler>();
         }
 
         public static IServiceCollection AddTomorrow(this IServiceCollection services, Action<TomorrowConfig> configurationAction)
@@ -22,19 +23,19 @@ namespace Microsoft.Extensions.DependencyInjection
             return services
                 .AddOptions()
                 .Configure(configurationAction)
-                .AddScoped<ITomorrowScheduler, TomorrowScheduler>();
+                .AddScoped<IScheduler, Scheduler>();
         }
 
-        public static TomorrowConfig RegisterQueues<T>(this TomorrowConfig config, params string[] queues) where T : ITomorrowQueueRegistrar
+        public static TomorrowConfig RegisterQueues<T>(this TomorrowConfig config, params string[] queues) where T : IQueueRegistrar
         {
             return config.RegisterQueues<T>(0, queues);
         }
 
-        public static TomorrowConfig RegisterQueues<T>(this TomorrowConfig config, int handlerInstances, params string[] queues) where T : ITomorrowQueueRegistrar
+        public static TomorrowConfig RegisterQueues<T>(this TomorrowConfig config, int handlerInstances, params string[] queues) where T : IQueueRegistrar
         {
             foreach (var queue in queues)
             {
-                config.Queues.Add(queue, new TomorrowQueueRegistrarMapping
+                config.Queues.Add(queue, new QueueRegistrarMapping
                 {
                     HandlerInstances = handlerInstances,
                     RegistrarType = typeof(T)

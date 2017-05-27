@@ -1,54 +1,49 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
-using System.Linq;
-using System.Reflection;
+using System.IO;
 using System.Threading.Tasks;
-using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
-using Tomorrow.Core.Json.Serialization;
+using Tomorrow.Core.Abstractions;
 
 namespace Tomorrow.Core.Json
 {
     [SuppressMessage("ReSharper", "UnusedMember.Global")]
-    public abstract class JsonQueueSchedulerBase : ITomorrowQueueScheduler
+    public abstract class JsonQueueSchedulerBase : IQueueScheduler
     {
+        protected JsonSerializer GetJsonSerializer()
+        {
+            return new JsonSerializer
+            {
+                Converters = 
+                {
+                    new LenientTypeJsonConverter(),
+                    new MethodInfoJsonConverter()
+                },
+                TypeNameHandling = TypeNameHandling.Auto
+            };
+        }
+
         protected abstract Task SaveDehydratedExpression(string queueName, string expression, DateTime activationTime);
 
-        public class JobRepresentation
+        protected Func<IServiceProvider, Task<QueuedJobResult>> RehydrateExpression(string expression)
         {
-            public SimpleTypePointer ActivationType { get; set; }
-            public SimpleMethodPointer Method { get; set; }
-            public KeyValuePair<SimpleTypePointer, object>[] Parameters { get; set; }
+            var representation = JsonConvert.DeserializeObject<IQueuedJob>(expression);
+            return sp => representation.Perform(sp);
         }
 
-        public async Task Schedule(string queueName, Type activationType, MethodInfo methodInfo, TimeSpan delayBy,
-            params object[] parameters)
+        public async Task Schedule(string queueName, TimeSpan delayBy, IQueuedJob queuedJob)
         {
-            var representation = new JobRepresentation
+            using (var memoryStream = new MemoryStream())
+            using (var writer = new StreamWriter(memoryStream))
+            using (var reader = new StreamReader(memoryStream))
             {
-                ActivationType = activationType,
-                Method = methodInfo,
-                Parameters = parameters.Select(p => new KeyValuePair<SimpleTypePointer, object>(p.GetType(), p)).ToArray()
-            };
+                GetJsonSerializer().Serialize(writer, queuedJob, queuedJob.GetType());
+                await writer.FlushAsync();
+                var expression = await reader.ReadToEndAsync();
 
-            var exprString = JsonConvert.SerializeObject(representation);
+                await SaveDehydratedExpression(queueName, expression, DateTime.UtcNow + delayBy);
 
-            await SaveDehydratedExpression(queueName, exprString, DateTime.UtcNow.Add(delayBy));
-        }
-
-        protected Action<IServiceProvider> RehydrateExpression(string expression)
-        {
-            var representation = JsonConvert.DeserializeObject<JobRepresentation>(expression);
-            var parameters = representation.Parameters.Select(pair => Convert.ChangeType(pair.Value, pair.Key.Type))
-                .ToArray();
-
-            return sp =>
-            {
-                var target = sp.GetRequiredService(representation.ActivationType);
-
-                representation.Method.MethodInfo.Invoke(target, parameters);
-            };
+            }
         }
     }
 }

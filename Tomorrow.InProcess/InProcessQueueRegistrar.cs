@@ -1,44 +1,51 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
-using Tomorrow.Core;
+using Tomorrow.Core.Abstractions;
 
 namespace Tomorrow.InProcess
 {
-    public class InProcessQueueRegistrar : ITomorrowQueueRegistrar
+    public class InProcessQueueRegistrar : IQueueRegistrar
     {
         private readonly IServiceScopeFactory _scopeFactory;
-        private readonly IOptions<InProcessQueueRegistrarSettings> _settings;
-        private readonly Dictionary<string, ConcurrentQueue<Action<IServiceProvider>>> _queues;
+        private readonly Dictionary<string, ConcurrentQueue<Func<IServiceProvider, Task<QueuedJobResult>>>> _queues;
+        private readonly Dictionary<string, SemaphoreSlim> _queueLocks;
 
-        public InProcessQueueRegistrar(IServiceScopeFactory scopeFactory, IOptions<InProcessQueueRegistrarSettings> settings)
+        public InProcessQueueRegistrar(IServiceScopeFactory scopeFactory)
         {
             _scopeFactory = scopeFactory;
-            _settings = settings;
-            _queues = new Dictionary<string, ConcurrentQueue<Action<IServiceProvider>>>();
+            _queues = new Dictionary<string, ConcurrentQueue<Func<IServiceProvider, Task<QueuedJobResult>>>>();
+            _queueLocks = new Dictionary<string, SemaphoreSlim>();
         }
 
         public Task RegisterQueue(string queueName, int handlers)
         {
-            _queues[queueName] = new ConcurrentQueue<Action<IServiceProvider>>();
+            _queues[queueName] = new ConcurrentQueue<Func<IServiceProvider, Task<QueuedJobResult>>>();
+            _queueLocks[queueName] = new SemaphoreSlim(0);
+
             for (var i = 0; i < handlers; i++)
             {
                 Task.Factory.StartNew(async () =>
                 {
                     while (true)
                     {
-                        Action<IServiceProvider> candidate;
-                        while (!_queues[queueName].TryDequeue(out candidate))
-                        {
-                            await Task.Delay(_settings.Value.RunnerPollPeriod);
-                        }
+                        await _queueLocks[queueName].WaitAsync();
 
-                        using (var scope = _scopeFactory.CreateScope())
+                        Func<IServiceProvider, Task<QueuedJobResult>> candidate;
+
+                        if (_queues[queueName].TryDequeue(out candidate))
                         {
-                            candidate(scope.ServiceProvider);
+                            using (var scope = _scopeFactory.CreateScope())
+                            {
+                                await candidate(scope.ServiceProvider);
+                            }
+                        }
+                        else
+                        {
+                            _queueLocks[queueName].Release();
                         }
                     }
 
@@ -49,24 +56,33 @@ namespace Tomorrow.InProcess
             return Task.Delay(0);
         }
 
-        public Task<ITomorrowQueueScheduler> GetSchedulerForQueue(string queueName)
+        public Task<IQueueScheduler> GetSchedulerForQueue(string queueName)
         {
-            return Task.FromResult<ITomorrowQueueScheduler>(new QueueScheduler(_queues[queueName]));
+            return Task.FromResult<IQueueScheduler>(new QueueScheduler(_queues[queueName], _queueLocks[queueName]));
         }
 
         private class QueueScheduler : Core.Json.JsonQueueSchedulerBase
         {
-            private readonly ConcurrentQueue<Action<IServiceProvider>> _queue;
+            private readonly ConcurrentQueue<Func<IServiceProvider, Task<QueuedJobResult>>> _queue;
+            private readonly SemaphoreSlim _semaphore;
 
-            public QueueScheduler(ConcurrentQueue<Action<IServiceProvider>> queue)
+            public QueueScheduler(ConcurrentQueue<Func<IServiceProvider, Task<QueuedJobResult>>> queue, SemaphoreSlim semaphore)
             {
                 _queue = queue;
+                _semaphore = semaphore;
             }
 
-            protected override async Task SaveDehydratedExpression(string queueName, string expression, DateTime activationTime)
+            protected override Task SaveDehydratedExpression(string queueName, string expression,
+                DateTime activationTime)
             {
-                await Task.Delay(Math.Max(0, (DateTime.UtcNow - activationTime).Milliseconds));
-                _queue.Enqueue(RehydrateExpression(expression));
+                Task.Delay(Math.Max(0, (DateTime.UtcNow - activationTime).Milliseconds))
+                    .ContinueWith(_ =>
+                    {
+                        _queue.Enqueue(RehydrateExpression(expression));
+                        _semaphore.Release();
+                    }).GetAwaiter();
+
+                return Task.Delay(0);
             }
         }
     }

@@ -22,7 +22,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Tomorrow.Core\Tomorrow.Core.csproj" />
+    <ProjectReference Include="..\Tomorrow.Core.Abstractions\Tomorrow.Core.Abstractions.csproj" />
   </ItemGroup>
 
 </Project>

@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.DependencyInjection;
-using Tomorrow.Core;
 
 namespace Tomorrow.InProcess
 {
@@ -8,7 +7,6 @@ namespace Tomorrow.InProcess
         public static IServiceCollection AddTomorrowInProcess(this IServiceCollection services)
         {
             return services
-                .AddOptions()
                 .AddSingleton<InProcessQueueRegistrar>();
         }
     }
