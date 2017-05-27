@@ -27,7 +27,7 @@ namespace Tomorrow.Core.Abstractions
             {
                 try
                 {
-                    var instance = serviceProvider.GetRequiredService(Method.DeclaringType);
+                    var instance = Method.IsStatic ? null : serviceProvider.GetRequiredService(Method.DeclaringType);
 
                     Method.Invoke(instance, Parameters);
                 }

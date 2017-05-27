@@ -9,18 +9,19 @@ namespace Tomorrow.Core.Abstractions.UnitTests
     [TestClass]
     public class ActivatedInstanceMethodJobTests
     {
-        public class TestException : Exception
+        private class TestException : Exception
         {
         }
 
-        public class TestService
+        private class TestService
         {
             public bool FlagThrown { get; protected set; } = false;
             public void ThrowFlag() => FlagThrown = true;
             public void ThrowException() => throw new TestException();
+            public static void ThrowStaticException() => throw new TestException();
         }
 
-        protected IServiceProvider MakePipeline() => new ServiceCollection().AddSingleton<TestService>().BuildServiceProvider();
+        private static IServiceProvider MakePipeline() => new ServiceCollection().AddSingleton<TestService>().BuildServiceProvider();
 
         [TestMethod]
         public async Task Executes()
@@ -43,6 +44,21 @@ namespace Tomorrow.Core.Abstractions.UnitTests
             
             var pipeline = MakePipeline();
             Action del = new TestService().ThrowException;
+
+            var testee = new ActivatedInstanceMethodJob(del.GetMethodInfo());
+
+            var result = await testee.Perform(pipeline);
+
+            Assert.AreEqual(QueuedJobResult.JobResult.Errored, result.Result);
+            Assert.IsInstanceOfType(result.Exception, typeof(TestException));
+        }
+
+        [TestMethod]
+        public async Task ReturnsStaticErrorResult()
+        {
+
+            var pipeline = new ServiceCollection().BuildServiceProvider();
+            Action del = TestService.ThrowStaticException;
 
             var testee = new ActivatedInstanceMethodJob(del.GetMethodInfo());
 
