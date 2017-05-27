@@ -5,9 +5,9 @@
     <Version>0.3.0</Version>
     <Authors>Liam Dawson</Authors>
     <Company>Liam Dawson</Company>
-    <Description>Core abstractions for the Tomorrow task handling system</Description>
+    <Description>Core runtime components of the Tomorrow task handling system</Description>
     <Copyright>Copyright 2017 Liam Dawson</Copyright>
-    <PackageLicenseUrl>https://github.com/tomorrow-lib/tomorrow/blob/master/Tomorrow.Core.Json/LICENSE.txt</PackageLicenseUrl>
+    <PackageLicenseUrl>https://github.com/tomorrow-lib/tomorrow/blob/master/Tomorrow.Core/LICENSE.txt</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/tomorrow-lib/tomorrow</PackageProjectUrl>
     <RepositoryUrl>https://github.com/tomorrow-lib/tomorrow.git</RepositoryUrl>
     <RepositoryType>Git</RepositoryType>
