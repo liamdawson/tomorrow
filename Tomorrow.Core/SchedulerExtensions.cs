@@ -30,10 +30,13 @@ namespace Tomorrow.Core
 
             if (body == null || body.Method.IsStatic)
             {
-                throw new ArgumentException("Only non-static method invocation calls are supported for scheduling an expression.", nameof(expression));
+                throw new ArgumentException(
+                    "Only non-static method invocation calls are supported for scheduling an expression.",
+                    nameof(expression));
             }
-            
-            var newJob = new ActivatedInstanceMethodJob(body.Method, expression.Parameters.Select(pe => Expression.Lambda(pe).Compile().DynamicInvoke()));
+
+            var newJob = new ActivatedInstanceMethodJob(body.Method,
+                body.Arguments.Select(arg => Expression.Lambda(arg).Compile().DynamicInvoke()).ToArray());
 
             await scheduler.Schedule(queueName, newJob, delayBy);
         }
@@ -42,9 +45,11 @@ namespace Tomorrow.Core
             Expression<Action<T>> expression) => await Schedule(scheduler, queueName, expression, TimeSpan.Zero);
 
         public static async Task Schedule<T>(this IScheduler scheduler,
-            Expression<Action<T>> expression, TimeSpan delayBy) => await Schedule(scheduler, Scheduler.DefaultQueueName, expression, delayBy);
+            Expression<Action<T>> expression, TimeSpan delayBy) => await Schedule(scheduler, Scheduler.DefaultQueueName,
+            expression, delayBy);
 
-        public static async Task Schedule<T>(this IScheduler scheduler, 
-            Expression<Action<T>> expression) => await Schedule(scheduler, Scheduler.DefaultQueueName, expression, TimeSpan.Zero);
+        public static async Task Schedule<T>(this IScheduler scheduler,
+            Expression<Action<T>> expression) => await Schedule(scheduler, Scheduler.DefaultQueueName, expression,
+            TimeSpan.Zero);
     }
 }

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,7 +20,8 @@ namespace Tomorrow.Core.UnitTests
             {
             }
 
-            public virtual void TakesInt(int takes)
+
+            public void Nop(int i)
             {
             }
         }
@@ -76,6 +78,22 @@ namespace Tomorrow.Core.UnitTests
             mock.Verify(
                 scheduler => scheduler.Schedule(It.IsAny<string>(),
                     Match.Create<ActivatedInstanceMethodJob>(job => Equals(job.Method, method.GetMethodInfo())),
+                    It.IsAny<TimeSpan>()), Times.Exactly(2));
+        }
+
+        [TestMethod]
+        [SuppressMessage("ReSharper", "ReturnValueOfPureMethodIsNotUsed")]
+        public async Task ExpressionFormCreatesJobWithParameters()
+        {
+            var mock = new Mock<IScheduler>(MockBehavior.Loose);
+            var target = mock.Object;
+
+            await target.Schedule<TestClass>(t => t.Nop(3));
+            await target.Schedule<TestClass>("queue", t => t.Nop(3));
+
+            mock.Verify(
+                scheduler => scheduler.Schedule(It.IsAny<string>(),
+                    Match.Create<ActivatedInstanceMethodJob>(job => (int) job.Parameters.Single() == 3),
                     It.IsAny<TimeSpan>()), Times.Exactly(2));
         }
     }
