@@ -3,8 +3,14 @@ solution: Tomorrow.sln
 dist: trusty
 script:
   - dotnet restore
-  - for proj in `ls *.UnitTest/*.csproj`; do dotnet build "$proj"; done;
-  - for proj in `ls *.UnitTest/*.csproj`; do dotnet test "$proj"; done;
+  - cd Tomorrow.Core.Abstractions.UnitTests
+  - dotnet build
+  - dotnet test
+  - cd -
+  - cd Tomorrow.Core.UnitTests
+  - dotnet build
+  - dotnet test
+  - cd -
 
 matrix:
   include:
