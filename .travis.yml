@@ -2,15 +2,7 @@ language: csharp
 solution: Tomorrow.sln
 dist: trusty
 script:
-  - dotnet restore
-  - cd Tomorrow.Core.Abstractions.UnitTests
-  - dotnet build
-  - dotnet test
-  - cd -
-  - cd Tomorrow.Core.UnitTests
-  - dotnet build
-  - dotnet test
-  - cd -
+  - bash travis.sh
 
 matrix:
   include:
