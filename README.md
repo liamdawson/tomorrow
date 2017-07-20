@@ -1,4 +1,4 @@
-[WIP] Tomorrow [![license](https://img.shields.io/github/license/tomorrow-lib/tomorrow.svg?style=flat-square)]()
+[WIP] Tomorrow [![license](https://img.shields.io/github/license/tomorrow-lib/tomorrow.svg?style=flat-square)](LICENSE.txt) [![develop build status](https://img.shields.io/travis/tomorrow-lib/tomorrow/develop.svg?style=flat-square)](https://travis-ci.org/tomorrow-lib/tomorrow)
 ==============
 
 A WIP simple and flexible job scheduling library for .Net Core, with a focus on supporting multiple queue handlers.
