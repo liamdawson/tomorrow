@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using Tomorrow.Core.Abstractions;
+using Xunit;
 
 namespace Tomorrow.Core.UnitTests
 {
-    [TestClass]
     public class QueueingConvenienceExtensions
     {
         private class TestClass
@@ -26,7 +23,7 @@ namespace Tomorrow.Core.UnitTests
             }
         }
 
-    [TestMethod]
+        [Fact]
         [SuppressMessage("ReSharper", "ReturnValueOfPureMethodIsNotUsed")]
         public async Task UsesDefaultQueue()
         {
@@ -45,7 +42,7 @@ namespace Tomorrow.Core.UnitTests
                     It.IsAny<TimeSpan>()), Times.Exactly(4));
         }
 
-        [TestMethod]
+        [Fact]
         [SuppressMessage("ReSharper", "ReturnValueOfPureMethodIsNotUsed")]
         public async Task UsesDefaultDelay()
         {
@@ -64,7 +61,7 @@ namespace Tomorrow.Core.UnitTests
                     TimeSpan.Zero), Times.Exactly(4));
         }
 
-        [TestMethod]
+        [Fact]
         [SuppressMessage("ReSharper", "ReturnValueOfPureMethodIsNotUsed")]
         public async Task ExpressionFormCreatesCorrectJobWithNoParameters()
         {
@@ -81,7 +78,7 @@ namespace Tomorrow.Core.UnitTests
                     It.IsAny<TimeSpan>()), Times.Exactly(2));
         }
 
-        [TestMethod]
+        [Fact]
         [SuppressMessage("ReSharper", "ReturnValueOfPureMethodIsNotUsed")]
         public async Task ExpressionFormCreatesJobWithParameters()
         {

@@ -2,11 +2,10 @@
 using System.Reflection;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Xunit;
 
 namespace Tomorrow.Core.Abstractions.UnitTests
 {
-    [TestClass]
     public class ActivatedInstanceMethodJobTests
     {
         private class TestException : Exception
@@ -15,7 +14,7 @@ namespace Tomorrow.Core.Abstractions.UnitTests
 
         private class TestService
         {
-            public bool FlagThrown { get; protected set; } = false;
+            public bool FlagThrown { get; private set; } = false;
             public void ThrowFlag() => FlagThrown = true;
             public void ThrowException() => throw new TestException();
             public static void ThrowStaticException() => throw new TestException();
@@ -23,7 +22,7 @@ namespace Tomorrow.Core.Abstractions.UnitTests
 
         private static IServiceProvider MakePipeline() => new ServiceCollection().AddSingleton<TestService>().BuildServiceProvider();
 
-        [TestMethod]
+        [Fact]
         public async Task Executes()
         {
             var pipeline = MakePipeline();
@@ -34,11 +33,11 @@ namespace Tomorrow.Core.Abstractions.UnitTests
 
             var result = await testee.Perform(pipeline);
 
-            Assert.AreEqual(QueuedJobResult.JobResult.Succeeded, result.Result);
-            Assert.AreEqual(true, verifier.FlagThrown);
+            Assert.Equal(QueuedJobResult.JobResult.Succeeded, result.Result);
+            Assert.True(verifier.FlagThrown);
         }
 
-        [TestMethod]
+        [Fact]
         public async Task ReturnsErrorResult()
         {
             
@@ -49,17 +48,19 @@ namespace Tomorrow.Core.Abstractions.UnitTests
 
             var result = await testee.Perform(pipeline);
 
-            Assert.AreEqual(QueuedJobResult.JobResult.Errored, result.Result);
-            Assert.IsInstanceOfType(result.Exception, typeof(TestException));
+            Assert.Equal(QueuedJobResult.JobResult.Errored, result.Result);
+            Assert.IsType<TestException>(result.Exception);
         }
 
-        [TestMethod]
-        [ExpectedException(typeof(ArgumentException))]
+        [Fact]
         public void StaticMethodTargetThrowsException()
         {
             Action del = TestService.ThrowStaticException;
 
-            var testee = new ActivatedInstanceMethodJob(del.GetMethodInfo());
+            Assert.Throws<ArgumentException>(() =>
+            {
+                var unused = new ActivatedInstanceMethodJob(del.GetMethodInfo());
+            });
         }
     }
 }
