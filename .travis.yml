@@ -1,20 +1,17 @@
 language: csharp
 solution: Tomorrow.sln
-mono: none
-dotnet: 1.0.4
-dist: xenial
+dist: trusty
 script:
   - dotnet restore
+  - for proj in `ls *.UnitTest/*.csproj`; do dotnet build "$proj"; done;
+  - for proj in `ls *.UnitTest/*.csproj`; do dotnet test "$proj"; done;
 
 matrix:
   include:
     - dotnet: 1.0.5
       mono: none
-      dist: xenial
       env: DOTNETCORE=1
     - dotnet: 1.1.2
       mono: none
-      dist: xenial
       env: DOTNETCORE=1
-    - mono: latest
 
