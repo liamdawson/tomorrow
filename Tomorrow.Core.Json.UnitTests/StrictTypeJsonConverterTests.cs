@@ -34,29 +34,22 @@ namespace Tomorrow.Core.Json.UnitTests
 
             Assert.Equal($"{{\"QualifiedName\":\"{expectedTypeString}\"}}", await serializer.Serialize(type));
         }
-    }
 
-    internal static class SerializerHelper
-    {
-        internal static async Task<string> Serialize(this JsonSerializer serializer, object val, Type objectType = null)
+        [Theory]
+        [MemberData(nameof(TypeStringPairs))]
+        public async Task CanDeserializeTypes(Type expectedType, string typeString)
         {
-            using (var mstr = new MemoryStream())
-            using (var writer = new StreamWriter(mstr))
-            using (var reader = new StreamReader(mstr))
+            var serializer = new JsonSerializer
             {
-                if (objectType != null)
+                TypeNameHandling = TypeNameHandling.Auto,
+                Converters =
                 {
-                    serializer.Serialize(writer, val, objectType);
+                    new StrictTypeJsonConverter()
                 }
-                else
-                {
-                    serializer.Serialize(writer, val);
-                }
-                await writer.FlushAsync();
-                mstr.Position = 0;
+            };
 
-                return await reader.ReadToEndAsync();
-            }
+            Assert.Equal(expectedType, await serializer.Deserialize<Type>($"{{\"QualifiedName\":\"{typeString}\"}}") as Type);
         }
     }
+
 }

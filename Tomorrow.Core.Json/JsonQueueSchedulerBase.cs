@@ -39,6 +39,8 @@ namespace Tomorrow.Core.Json
             {
                 GetJsonSerializer().Serialize(writer, queuedJob, queuedJob.GetType());
                 await writer.FlushAsync();
+                memoryStream.Position = 0;
+
                 var expression = await reader.ReadToEndAsync();
 
                 await SaveDehydratedExpression(queueName, expression, DateTime.UtcNow + delayBy);
