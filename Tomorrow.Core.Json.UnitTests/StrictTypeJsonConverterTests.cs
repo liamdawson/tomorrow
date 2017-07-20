@@ -32,9 +32,9 @@ namespace Tomorrow.Core.Json.UnitTests
                 }
             };
 
-            Assert.Equal($"{{\"QualifiedName\":\"{expectedTypeString}\"}}", await serializer.Serialize(type));        }
+            Assert.Equal($"{{\"QualifiedName\":\"{expectedTypeString}\"}}", await serializer.Serialize(type));
+        }
     }
-
 
     internal static class SerializerHelper
     {
