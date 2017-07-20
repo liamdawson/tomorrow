@@ -16,7 +16,7 @@ namespace Tomorrow.Core.Json
             {
                 Converters = 
                 {
-                    new LenientTypeJsonConverter(),
+                    new StrictTypeJsonConverter(),
                     new MethodInfoJsonConverter()
                 },
                 TypeNameHandling = TypeNameHandling.Auto

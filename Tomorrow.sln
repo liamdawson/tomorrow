@@ -8,9 +8,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomorrow.Core", "Tomorrow.Core\Tomorrow.Core.csproj", "{26781B11-06A0-4F9A-A4AC-38216F84EACF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomorrow.Core.Json", "Tomorrow.Core.Json\Tomorrow.Core.Json.csproj", "{D848CD60-D322-4C3D-B77B-189A9F1C748C}"
-	ProjectSection(ProjectDependencies) = postProject
-		{26781B11-06A0-4F9A-A4AC-38216F84EACF} = {26781B11-06A0-4F9A-A4AC-38216F84EACF}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tomorrow.Core.Abstractions", "Tomorrow.Core.Abstractions\Tomorrow.Core.Abstractions.csproj", "{F118B7CF-21F4-41DA-8300-B33C00BB2F1D}"
 EndProject

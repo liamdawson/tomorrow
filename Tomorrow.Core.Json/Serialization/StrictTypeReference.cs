@@ -6,7 +6,7 @@ namespace Tomorrow.Core.Json.Serialization
 {
     [SuppressMessage("ReSharper", "MemberCanBePrivate.Global")]
     [SuppressMessage("ReSharper", "UnusedMember.Global")]
-    public class SerializableTypeReference
+    public class StrictTypeReference
     {
         private Type _type;
         [JsonIgnore]
@@ -14,21 +14,11 @@ namespace Tomorrow.Core.Json.Serialization
 
         public string QualifiedName { get; set; }
 
-        public SerializableTypeReference(Type type)
+        public StrictTypeReference(Type type)
         {
             QualifiedName = type.AssemblyQualifiedName;
         }
 
-        public SerializableTypeReference() { }
-
-        public static implicit operator SerializableTypeReference(Type type)
-        {
-            return new SerializableTypeReference(type);
-        }
-
-        public static implicit operator Type(SerializableTypeReference typeReference)
-        {
-            return typeReference.Type;
-        }
+        public StrictTypeReference() { }
     }
 }
