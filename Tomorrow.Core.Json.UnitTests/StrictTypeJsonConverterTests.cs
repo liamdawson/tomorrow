@@ -12,44 +12,30 @@ namespace Tomorrow.Core.Json.UnitTests
 {
     public class StrictTypeJsonConverterTests
     {
-        public static IEnumerable<object[]> TypeStringPairs => new List<object[]>
+        public static IEnumerable<object[]> Types => new List<object[]>
         {
-            new object[] { typeof(object), new StrictTypeReference(typeof(object)).QualifiedName },
-            new object[] { typeof(IServiceProvider), new StrictTypeReference(typeof(IServiceProvider)).QualifiedName },
-            new object[] { typeof(StrictTypeJsonConverter), new StrictTypeReference(typeof(StrictTypeJsonConverter)).QualifiedName }
+            new object[] { typeof(object) },
+            new object[] { typeof(IServiceProvider) },
+            new object[] { typeof(StrictTypeJsonConverter) }
+        };
+
+        public static JsonSerializerSettings SerializerSettings =>
+        new JsonSerializerSettings
+        {
+            Converters = {
+                new StrictTypeJsonConverter()
+            },
+            TypeNameHandling = TypeNameHandling.Auto
         };
 
         [Theory]
-        [MemberData(nameof(TypeStringPairs))]
-        public async Task CanSerializeTypes(Type type, string expectedTypeString)
+        [MemberData(nameof(Types))]
+        public void Types_SurviveRoundTrip(Type type)
         {
-            var serializer = new JsonSerializer
-            {
-                TypeNameHandling = TypeNameHandling.Auto,
-                Converters =
-                {
-                    new StrictTypeJsonConverter()
-                }
-            };
+            var serialized = JsonConvert.SerializeObject(type, SerializerSettings);
+            var deserialized = JsonConvert.DeserializeObject<Type>(serialized, SerializerSettings);
 
-            Assert.Equal($"{{\"QualifiedName\":\"{expectedTypeString}\"}}", await serializer.Serialize(type));
-        }
-
-        [Theory]
-        [MemberData(nameof(TypeStringPairs))]
-        public async Task CanDeserializeTypes(Type expectedType, string typeString)
-        {
-            var serializer = new JsonSerializer
-            {
-                TypeNameHandling = TypeNameHandling.Auto,
-                Converters =
-                {
-                    new StrictTypeJsonConverter()
-                }
-            };
-
-            Assert.Equal(expectedType, await serializer.Deserialize<Type>($"{{\"QualifiedName\":\"{typeString}\"}}") as Type);
+            Assert.Equal(type, deserialized);
         }
     }
-
 }

@@ -10,9 +10,9 @@ namespace Tomorrow.Core.Json
     [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public abstract class JsonQueueSchedulerBase : IQueueScheduler
     {
-        protected JsonSerializer GetJsonSerializer()
+        protected JsonSerializerSettings GetJsonSerializerSettings()
         {
-            return new JsonSerializer
+            return new JsonSerializerSettings
             {
                 Converters = 
                 {
@@ -33,19 +33,8 @@ namespace Tomorrow.Core.Json
 
         public async Task Schedule(string queueName, TimeSpan delayBy, IQueuedJob queuedJob)
         {
-            using (var memoryStream = new MemoryStream())
-            using (var writer = new StreamWriter(memoryStream))
-            using (var reader = new StreamReader(memoryStream))
-            {
-                GetJsonSerializer().Serialize(writer, queuedJob, queuedJob.GetType());
-                await writer.FlushAsync();
-                memoryStream.Position = 0;
-
-                var expression = await reader.ReadToEndAsync();
-
-                await SaveDehydratedExpression(queueName, expression, DateTime.UtcNow + delayBy);
-
-            }
+            var expression = JsonConvert.SerializeObject(queuedJob, queuedJob.GetType(), GetJsonSerializerSettings())
+            await SaveDehydratedExpression(queueName, expression, DateTime.UtcNow + delayBy);
         }
     }
 }

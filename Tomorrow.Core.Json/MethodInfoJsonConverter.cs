@@ -17,7 +17,7 @@ namespace Tomorrow.Core.Json
             }
             else
             {
-                serializer.Serialize(writer, val, typeof(SerializableMethodInfo));
+                serializer.Serialize(writer, new SerializableMethodInfo(val), typeof(SerializableMethodInfo));
             }
         }
 
@@ -30,7 +30,8 @@ namespace Tomorrow.Core.Json
 
         public override bool CanConvert(Type objectType)
         {
-            return objectType == typeof(MethodInfo);
+            return objectType == typeof(MethodInfo)
+                || objectType.GetTypeInfo().IsSubclassOf(typeof(MethodInfo));
         }
     }
 }
